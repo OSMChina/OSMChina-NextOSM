@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>OSM UI</title>
   
   <meta name="description" content="OpenStreetMap is the free wiki world map." />
   <meta property="og:site_name" content="OpenStreetMap" />
@@ -116,6 +117,7 @@ header img.logo {
       <div id="map" style="height: 100%"></div>
     </div>
   </div>
+  <script src="map-common.js"></script>
 
 <script>
 let map = null;
@@ -169,6 +171,19 @@ const newOsm = {
     L.control.scale().addTo(map);
     markerLayers = L.featureGroup();
     mapObjectLayers = L.featureGroup();
+    
+    map.on('moveend zoomend', (e) => {
+      let zoom = map.getZoom();
+      let center = map.getCenter();
+      location.hash = getMapHash(zoom, center);
+    });
+    
+    window.addEventListener('hashchange', () => {
+      let newMapState = parseMapHash();
+      if (newMapState) {
+        map.setView(newMapState.latlon, newMapState.zoom);
+      }
+    });
   },
   methods: {
     async search() {

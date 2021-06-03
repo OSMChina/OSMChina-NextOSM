@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>OSM-高德地图对比</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"/>
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
   
@@ -33,6 +34,7 @@ html, body {
     <div id="map1" class="map-frame"></div>
     <div id="map2" class="map-frame"></div>
   </div>
+  <script src="map-common.js"></script>
 
 <script>
 var map = L.map('map1').setView([39.905530, 116.391305], 17);
@@ -57,7 +59,7 @@ map.on('moveend zoomend', (e) => {
   }
   let zoom = map.getZoom();
   let center = map.getCenter();
-  location.hash = `#map=${zoom}/${center.lat}/${center.lng}`;
+  location.hash = getMapHash(zoom, center);
   map2sync = false;
   gdmap.setView(center, zoom);
 });
@@ -68,9 +70,16 @@ gdmap.on('moveend zoomend', (e) => {
   }
   let zoom = gdmap.getZoom();
   let center = gdmap.getCenter();
-  location.hash = `#map=${zoom}/${center.lat}/${center.lng}`;
+  location.hash = getMapHash(zoom, center);
   map1sync = false;
   map.setView(center, zoom);
+});
+
+window.addEventListener('hashchange', () => {
+  let newMapState = parseMapHash();
+  if (newMapState) {
+    map.setView(newMapState.latlon, newMapState.zoom);
+  }
 });
 </script>
 </body>
