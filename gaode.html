@@ -37,13 +37,18 @@ html, body {
   <script src="map-common.js"></script>
 
 <script>
-var map = L.map('map1').setView([39.905530, 116.391305], 17);
+let mapState = parseMapHash() || {
+  zoom: 17,
+  latlon: [39.905530, 116.391305]
+};
+
+var map = L.map('map1').setView(mapState.latlon, mapState.zoom);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 L.control.scale().addTo(map);
 
-var gdmap = L.map('map2').setView([39.905530, 116.391305], 17);
+var gdmap = L.map('map2').setView(mapState.latlon, mapState.zoom);
 
 L.tileLayer.chinaProvider('GaoDe.Normal.Map', {
   attribution: '&copy; 2021 高德软件 - GS(2019)6379号'

@@ -2,7 +2,7 @@ function parseMapHash() {
   let matched = location.hash.match(/^#map=([.\d]+)\/([.\d]+)\/([.\d]+)/);
   if (matched) {
     return {
-      zoom: matched[1],
+      zoom: Number(matched[1]),
       latlon: [ matched[2], matched[3] ]
     }
   }
