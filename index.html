@@ -120,6 +120,11 @@ header img.logo {
   <script src="map-common.js"></script>
 
 <script>
+let mapState = parseMapHash() || {
+  zoom: 4,
+  latlon: [34.09, 104.06]
+};
+
 let map = null;
 let markerLayers = null;
 let mapObjectLayers = null;
@@ -163,7 +168,7 @@ const newOsm = {
     }
   },
   mounted() {
-    map = L.map('map').setView([34.09, 104.06], 4);
+    map = L.map('map').setView(mapState.latlon, mapState.zoom);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       zoomSnap: 0.25
