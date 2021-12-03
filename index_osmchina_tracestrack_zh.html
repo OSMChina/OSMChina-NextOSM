@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head data-locale="zh-CN" data-preferred-editor="id">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>OpenStreetMap 中国大陆</title>
+  
+  <meta name="description" content="OpenStreetMap is the free wiki world map." />
+  <meta property="og:site_name" content="OpenStreetMap" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://www.openstreetmap.org/assets/osm_logo_256-ed028f90468224a272961c380ecee0cfb73b8048b34f4b4b204b7f0d1097875d.png" />
+  <meta property="og:image:secure_url" content="https://www.openstreetmap.org/assets/osm_logo_256-ed028f90468224a272961c380ecee0cfb73b8048b34f4b4b204b7f0d1097875d.png" />
+  <meta property="og:url" content="https://www.openstreetmap.org/search" />
+  <meta property="og:description" content="OpenStreetMap 是一个世界地图，由像您一样的人们所构筑，可依据开放许可协议自由使用。本页面为OSMChina所展示自有渲染的页面，感谢您对中国社区的支持。" />
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@next"></script>
+</head>
+<style>
+.map-layout #content {
+  overflow: hidden;
+  position: absolute;
+  top: 73px;
+  bottom: 0;
+  width: 100%;
+}
+header img.logo {
+  width: 30px;
+  height: 30px;
+  margin-top: -2px;
+  vertical-align: middle;
+}
+.search-list {
+  z-index: 999;
+  position: absolute;
+  top: 73px;
+  right: 0;
+  width: 400px;
+  max-width: 100%;
+  max-height: calc(100vh - 90px);
+  overflow: auto;
+}
+@media only screen and (max-width: 992px) {
+  .map-layout #content {
+    top: 124.5px;
+  }
+  .search-list {
+    top: 124.5px;
+    height: 86px;
+  }
+  .nav-menu {
+    display: none;
+  }
+  header .dropdown {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}
+</style>
+
+<body>
+  <div id="app" class="map-layout">
+    <header class="p-3 mb-3 border-bottom">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="https://www.openstreetmap.org" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none"
+          style="margin-right: 1.5em; font-size: 18px; font-weight: bold">
+          <picture style="margin-right: 0.5em">
+            <img srcset="osm_logo.svg" alt="OpenStreetMap 标志" class="logo" src="osm_logo.png">
+          </picture>
+          OpenStreetMap
+        </a>
+
+        <ul class="nav-menu nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+          <!--<li><a href="#" class="nav-link px-2 link-secondary">编辑</a></li>-->
+          <li><a href="#" class="nav-link px-2 link-dark">历史</a></li>
+          <li><a href="#" class="nav-link px-2 link-dark">导出</a></li>
+        </ul>
+
+        <form @submit.prevent="search()" class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
+          <input v-model="searchText" type="search" class="form-control" placeholder="搜索..." aria-label="Search">
+        </form>
+        
+        <div v-show="showSearchList" class="search-list list-group list-group-flush border-bottom scrollarea"
+          style="">
+          <a v-for="(item, index) in searchList" href="#" class="list-group-item list-group-item-action py-3 lh-tight"
+            @mouseover="locate(item)" @click="gotoPlace(item)" :class="{ active: item.place_id === activeIndex }">
+            <div class="d-flex w-100 align-items-center justify-content-between">
+              <strong class="mb-1">{{item.place}}</strong>
+              <small class="text-muted">{{item.type}}</small>
+            </div>
+            <div class="col-10 mb-1 small">{{item.address}}</div>
+          </a>
+        </div>
+
+        <div class="dropdown text-end">
+          <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://github.com/osmchina.png" alt="mdo" class="rounded-circle" width="32" height="32">
+          </a>
+          <!--<ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="#">我的信息</a></li>
+            <li><a class="dropdown-item" href="#">我的资料</a></li>
+            <li><a class="dropdown-item" href="#">我的设置</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">退出</a></li>
+          </ul>-->
+        </div>
+      </div>
+    </header>
+    <div id="content">
+      <div id="map" style="height: 100%"></div>
+    </div>
+  </div>
+  <script src="map-common.js"></script>
+
+<script>
+let mapState = parseMapHash() || {
+  zoom: 4,
+  latlon: [34.09, 104.06]
+};
+
+let map = null;
+let markerLayers = null;
+let mapObjectLayers = null;
+
+function searchOverpassRelation(name) {
+  return fetch('https://overpass.kumi.systems/api/interpreter', {
+    method: 'POST',
+    mode: 'cors',
+    body: `
+      [out:json][timeout:5];
+      (
+        relation["name"="${name}"];
+        relation["alt_name"="${name}"];
+        relation["short_name"="${name}"];
+      );
+      convert item ::=::,::geom=geom(),_osm_type=type();
+      out geom 1;`
+  }).then(res => res.json());
+}
+
+function queryOverpass(type, id) {
+  return fetch('https://overpass.kumi.systems/api/interpreter', {
+    method: 'POST',
+    mode: 'cors',
+    body: `
+      [out:json][timeout:25];
+      ( ${type}(${id}); );
+      convert item ::=::,::geom=geom(),_osm_type=type();
+      out geom;`
+  }).then(res => res.json());
+}
+
+const newOsm = {
+  data() {
+    return {
+      showSearchList: false,
+      searchText: '',
+      searchList: [],
+      activeIndex: 0,
+      onMapMarkers: {}
+    }
+  },
+  mounted() {
+    map = L.map('map').setView(mapState.latlon, mapState.zoom);
+    L.tileLayer('https://a.tiles.tracestrack.com/base/{z}/{x}/{y}.png?key=4823e6fdf92f1e76207be924048ec635', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      zoomSnap: 0.25
+    }).addTo(map);
+    L.tileLayer('https://b.tiles.tracestrack.com/zh-hans-name/{z}/{x}/{y}.png?key=4823e6fdf92f1e76207be924048ec635', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      zoomSnap: 0.25
+    }).addTo(map);
+    L.control.scale().addTo(map);
+    markerLayers = L.featureGroup();
+    mapObjectLayers = L.featureGroup();
+    
+    map.on('moveend zoomend', (e) => {
+      let zoom = map.getZoom();
+      let center = map.getCenter();
+      location.hash = getMapHash(zoom, center);
+    });
+    
+    window.addEventListener('hashchange', () => {
+      let newMapState = parseMapHash();
+      if (newMapState) {
+        map.setView(newMapState.latlon, newMapState.zoom);
+      }
+    });
+  },
+  methods: {
+    async search() {
+      mapObjectLayers.clearLayers();
+      searchOverpassRelation(this.searchText)
+        .then(data => {
+          if (!data.elements.length) return;
+          let relation = L.geoJSON(data.elements[0].geometry).addTo(mapObjectLayers);
+          mapObjectLayers.addTo(map);
+          map.fitBounds(relation.getBounds());
+        })
+      
+      let data = await fetch(`https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(this.searchText)}&format=jsonv2`)
+        .then(res => res.json());
+      markerLayers.clearLayers();
+      
+      this.searchList = data.map(x => {
+        let addrList = x.display_name.split(', ');
+        let postcode = '';
+        let addressBuf = [];
+        for (const addrPart of addrList.slice(1).reverse()) {
+          if (addrPart.match(/^\d+$/)) {
+            postcode = addrPart;
+          } else {
+            addressBuf.push(addrPart);
+          }
+        }
+        
+        // add marker to marker group
+        this.onMapMarkers[x.place_id] = L.marker([x.lat, x.lon]).addTo(markerLayers);
+        
+        return Object.assign(x, {
+          place: addrList[0],
+          address: addressBuf.join('')
+        });
+      });
+      
+      markerLayers.addTo(map);
+      this.showSearchList = true;
+    },
+    locate(item) {
+      let latLng = new L.LatLng(item.lat, item.lon);
+      if (!map.getBounds().contains(latLng)) {
+        map.flyTo(latLng);
+      }
+    },
+    gotoPlace(item) {
+      this.activeIndex = item.place_id;
+      let bbox = item.boundingbox;
+      markerLayers.removeFrom(map);
+      mapObjectLayers.clearLayers();
+      map.flyToBounds([
+        [ bbox[0], bbox[2] ],
+        [ bbox[1], bbox[3] ]
+      ]);
+      queryOverpass(item.osm_type, item.osm_id)
+        .then(data => {
+          L.geoJSON(data.elements[0].geometry).addTo(mapObjectLayers);
+          mapObjectLayers.addTo(map);
+        });
+    }
+  }
+};
+
+Vue.createApp(newOsm).mount('#app');
+</script>
+</body>
+</html>
