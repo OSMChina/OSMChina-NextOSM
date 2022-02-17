@@ -3,8 +3,8 @@ function parseMapHash() {
   if (matched) {
     return {
       zoom: Number(matched[1]),
-      latlon: [ matched[2], matched[3] ]
-    }
+      latlon: [matched[2], matched[3]],
+    };
   }
 }
 
