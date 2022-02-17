@@ -69,16 +69,30 @@ header img.logo {
   <div id="app" class="map-layout">
     <header class="p-3 mb-3 border-bottom">
       <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <a href="https://www.openstreetmap.org" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none"
-          style="margin-right: 1.5em; font-size: 18px; font-weight: bold">
+        <a href="https://www.openstreetmap.org"
+           class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none"
+           style="margin-right: 1.5em; font-size: 18px; font-weight: bold"
+        >
           <picture style="margin-right: 0.5em">
-            <img srcset="osm_logo.svg" alt="OpenStreetMap 标志" class="logo" src="osm_logo.svg">
+            <img alt="OpenStreetMap" class="logo" src="../images/osm_logo.svg" srcset="osm_logo.svg">
           </picture>
           OpenStreetMap
         </a>
 
         <ul class="nav-menu nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <!--<li><a href="#" class="nav-link px-2 link-secondary">编辑</a></li>-->
+          <li>
+            <a href="#" class="nav-link px-2 link-secondary">编辑</a>
+            <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+              <li><a class="dropdown-item" href="#">使用 iD Editor（浏览器编辑器） 编辑</a></li>
+              <li><a class="dropdown-item" href="#">使用 RapiD（浏览器编辑器） 编辑</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">使用 JOSM（远程控制编辑器） 编辑</a></li>
+              <li><a class="dropdown-item" href="#">使用 Potlatch（远程控制编辑器） 编辑</a></li>
+              <li><a class="dropdown-item" href="#">使用 RapiD（远程控制编辑器） 编辑</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">使用 Level0（纯文本编辑器） 编辑</a></li>
+            </ul>
+          </li>
           <li><a href="#" class="nav-link px-2 link-dark">历史</a></li>
           <li><a href="#" class="nav-link px-2 link-dark">导出</a></li>
         </ul>
@@ -87,8 +101,10 @@ header img.logo {
           <input v-model="searchText" type="search" class="form-control" placeholder="搜索..." aria-label="Search">
         </form>
         
-        <div v-show="showSearchList" class="search-list list-group list-group-flush border-bottom scrollarea"
-          style="">
+        <div v-show="showSearchList"
+             class="search-list list-group list-group-flush border-bottom scrollarea"
+             style=""
+        >
           <a v-for="(item, index) in searchList" href="#" class="list-group-item list-group-item-action py-3 lh-tight"
             @mouseover="locate(item)" @click="gotoPlace(item)" :class="{ active: item.place_id === activeIndex }">
             <div class="d-flex w-100 align-items-center justify-content-between">
@@ -101,15 +117,18 @@ header img.logo {
 
         <div class="dropdown text-end">
           <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="https://github.com/osmchina.png" alt="mdo" class="rounded-circle" width="32" height="32">
+            <img src="https://github.com/osmchina.png" alt="avatar" class="rounded-circle" width="32" height="32">
           </a>
-          <!--<ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-            <li><a class="dropdown-item" href="#">我的信息</a></li>
+          <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="#">我的综合面板</a></li>
+            <li><a class="dropdown-item" href="#">我的消息 <code>0</code></a></li>
             <li><a class="dropdown-item" href="#">我的资料</a></li>
             <li><a class="dropdown-item" href="#">我的设置</a></li>
+            <li><a class="dropdown-item" href="#">我的偏好</a></li>
             <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">返回家位置</a></li>
             <li><a class="dropdown-item" href="#">退出</a></li>
-          </ul>-->
+          </ul>
         </div>
       </div>
     </header>
@@ -169,10 +188,26 @@ const newOsm = {
   },
   mounted() {
     map = L.map('map').setView(mapState.latlon, mapState.zoom);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //////base
+    L.tileLayer('https://a.tiles.tracestrack.com/base/{z}/{x}/{y}.png?key=4823e6fdf92f1e76207be924048ec635', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       zoomSnap: 0.25
     }).addTo(map);
+    //////overlay
+    L.tileLayer('https://b.tiles.tracestrack.com/zh-hans-name/{z}/{x}/{y}.png?key=4823e6fdf92f1e76207be924048ec635', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      zoomSnap: 0.25
+    }).addTo(map);
+    //////osmchina
+    // L.tileLayer('https://tile.osmchina.org/{z}/{x}/{y}.png', {
+    //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    //   zoomSnap: 0.25
+    // }).addTo(map);
+    //////official
+    // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    //   zoomSnap: 0.25
+    // }).addTo(map);
     L.control.scale().addTo(map);
     markerLayers = L.featureGroup();
     mapObjectLayers = L.featureGroup();
