@@ -3,6 +3,8 @@
 
 OpenStreetMap UI
 
+部署在pages分支里，本分支为dev分支，先开发
+
 - [index](https://alexandermisel.github.io/new_osm/): New OSM UI
 - [baidu](https://alexandermisel.github.io/new_osm/baidu): Compare OSM with Baidu Map
 - [gaode](https://alexandermisel.github.io/new_osm/gaode): Compare OSM with AMap
