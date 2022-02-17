@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head data-locale="zh-CN" data-preferred-editor="id">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>OSM-Baidu地图对比</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.7.2/dist/proj4.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4leaflet@1.0.2/src/proj4leaflet.min.js"></script>
+  <script src='https://cdn.jsdelivr.net/gh/AlexanderMisel/Leaflet.ChineseTmsProviders@master/src/leaflet.ChineseTmsProviders.js'></script>
+  <script src='https://cdn.jsdelivr.net/gh/gisarmory/Leaflet.InternetMapCorrection@master/dist/leaflet.mapCorrection.min.js'></script>
+</head>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+#content {
+  height: 100%;
+}
+.map-frame {
+  display: inline-block;
+  height: 100%;
+  width: 49%;
+}
+</style>
+
+<body>
+  <div id="content">
+    <div id="map1" class="map-frame"></div>
+    <div id="map2" class="map-frame"></div>
+  </div>
+  <script src="map-common.js"></script>
+
+<script>
+let mapState = parseMapHash() || {
+  zoom: 17,
+  latlon: [39.905530, 116.391305]
+};
+
+var map = L.map('map1').setView(mapState.latlon, mapState.zoom);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+L.control.scale().addTo(map);
+
+var bdmap = L.map('map2', {
+  crs: L.CRS.Baidu,
+  zoomSnap: 0.25
+}).setView(mapState.latlon, mapState.zoom + 0.75);
+
+L.tileLayer.chinaProvider('Baidu.Normal.Map', {
+  attribution: '&copy; 2021 Baidu - GS(2019)5128号'
+}).addTo(bdmap);
+
+let map1sync = true;
+let map2sync = true;
+
+map.on('moveend zoomend', (e) => {
+  if (!map1sync) {
+    map1sync = true;
+    return;
+  }
+  let zoom = map.getZoom();
+  let center = map.getCenter();
+  location.hash = getMapHash(zoom, center);
+  map2sync = false;
+  bdmap.setView(center, zoom + 0.75);
+});
+bdmap.on('moveend zoomend', (e) => {
+  if (!map2sync) {
+    map2sync = true;
+    return;
+  }
+  let zoom = bdmap.getZoom();
+  let center = bdmap.getCenter();
+  location.hash = getMapHash(zoom - 0.75, center);
+  map1sync = false;
+  map.setView(center, zoom - 0.75);
+});
+
+window.addEventListener('hashchange', () => {
+  let newMapState = parseMapHash();
+  if (newMapState) {
+    map.setView(newMapState.latlon, newMapState.zoom);
+  }
+});
+</script>
+
+  <script src="baidu-search.js"></script>
+</body>
+</html>
