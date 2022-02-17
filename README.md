@@ -1,5 +1,6 @@
 # new_osm
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FLaoshuBaby%2FOSMChina-NextOSM.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FLaoshuBaby%2FOSMChina-NextOSM?ref=badge_shield)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 OpenStreetMap UI
 
