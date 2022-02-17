@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
-  <title>OpenStreetMap 中国大陆</title>
+  <title>OpenStreetMap 中国</title>
   
   <meta name="description" content="OpenStreetMap is the free wiki world map." />
   <meta property="og:site_name" content="OpenStreetMap" />
@@ -12,7 +12,7 @@
   <meta property="og:image" content="https://www.openstreetmap.org/assets/osm_logo_256-ed028f90468224a272961c380ecee0cfb73b8048b34f4b4b204b7f0d1097875d.png" />
   <meta property="og:image:secure_url" content="https://www.openstreetmap.org/assets/osm_logo_256-ed028f90468224a272961c380ecee0cfb73b8048b34f4b4b204b7f0d1097875d.png" />
   <meta property="og:url" content="https://www.openstreetmap.org/search" />
-  <meta property="og:description" content="OpenStreetMap 是一个世界地图，由像您一样的人们所构筑，可依据开放许可协议自由使用。本页面为OSMChina所展示自有渲染的页面，感谢您对中国社区的支持。" />
+  <meta property="og:description" content="OpenStreetMap 是一个世界地图，由像您一样的人们所构筑，可依据开放许可协议自由使用。" />
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -169,10 +169,18 @@ const newOsm = {
   },
   mounted() {
     map = L.map('map').setView(mapState.latlon, mapState.zoom);
-    L.tileLayer('https://tile.osmchina.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://a.tiles.tracestrack.com/base/{z}/{x}/{y}.png?key=4823e6fdf92f1e76207be924048ec635', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       zoomSnap: 0.25
     }).addTo(map);
+    L.tileLayer('https://b.tiles.tracestrack.com/zh-hans-name/{z}/{x}/{y}.png?key=4823e6fdf92f1e76207be924048ec635', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      zoomSnap: 0.25
+    }).addTo(map);
+    // L.tileLayer('https://tile.osmchina.org/{z}/{x}/{y}.png', {
+    //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    //   zoomSnap: 0.25
+    // }).addTo(map);
     L.control.scale().addTo(map);
     markerLayers = L.featureGroup();
     mapObjectLayers = L.featureGroup();
