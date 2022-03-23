@@ -164,12 +164,6 @@
             </li>
             <li><a href="#" class="nav-link px-2 link-dark">历史</a></li>
             <li><a href="#" class="nav-link px-2 link-dark">导出</a></li>
-            <!-- 这个是线上环境为了感谢tracesmap提供瓦片加的，加了会造成不水平，还没排错 -->
-            <li>
-              <p class="nav-link px-2 link-dark">
-                <b>感谢Tracestrack对OSMChina社区的支持</b>
-              </p>
-            </li>
           </ul>
 
           <!-- <ul>
@@ -305,21 +299,11 @@
         },
         mounted() {
           map = L.map("map").setView(mapState.latlon, mapState.zoom);
-          //////base
           L.tileLayer(
-            "https://tile.tracestrack.com/base/{z}/{x}/{y}.png?key=4823e6fdf92f1e76207be924048ec635",
+            "https://tile.tracestrack.com/zh-hans/{z}/{x}/{y}.png?key=4823e6fdf92f1e76207be924048ec635",
             {
               attribution:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-              zoomSnap: 0.25,
-            }
-          ).addTo(map);
-          //////overlay
-          L.tileLayer(
-            "https://tile.tracestrack.com/zh-hans-name/{z}/{x}/{y}.png?key=4823e6fdf92f1e76207be924048ec635",
-            {
-              attribution:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                '&copy; Map hosted by <a href="https://www.tracestrack.com/tiles">Tracestrack</a>. Data <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
               zoomSnap: 0.25,
             }
           ).addTo(map);
